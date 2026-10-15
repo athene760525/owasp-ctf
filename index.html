@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>OWASP 資安闖關</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header><div class="wrap"><div class="hbar"><a class="brand" href="index.html"><span class="dot"></span>OWASP 資安闖關<small>TOP 10 · 2025</small></a><div class="hspace"></div><div class="pbadge">已解鎖 <b id="pnum">0</b>/10</div><button class="ghost" id="themeBtn" aria-label="切換深淺色">◐ 主題</button></div></div><div class="ptrack"><div class="pfill" id="pfill"></div></div></header>
+<main class="wrap">
+  <section class="hero">
+    <div class="eyebrow">先體驗 · 再理解 · 會防護</div>
+    <h1>親手找出漏洞，再學會怎麼補</h1>
+    <p>每一關都是一個「出問題的網站」情境——你先動手玩、發現哪裡怪怪的，再回頭看為什麼會這樣、以及正確做法。全部用假資料模擬，不連真實系統、不是攻擊工具。從 A01 一路解鎖到 A10。</p>
+    <div class="flow">
+      <span><i>1</i>情境體驗</span><span class="arrow">→</span>
+      <span><i>2</i>找出問題</span><span class="arrow">→</span>
+      <span><i>3</i>原因＋解法</span><span class="arrow">→</span>
+      <span><i>★</i>解鎖下一關</span>
+    </div>
+  </section>
+
+  <div class="maphead"><h2>闖關地圖</h2><div class="hint">點亮的關卡可以進入 · 完成後自動解鎖下一關</div></div>
+  <div class="grid" id="grid"></div>
+
+  <div class="final" id="final" hidden>
+    <h2>★ 十關全破！</h2>
+    <p>你已經親手走過 OWASP Top 10 的每一種風險。把這套「先踩雷、再理解、會防護」的流程帶回教室，就是最好的資安課。</p>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>為「Web 應用與 OWASP Top 10 簡介」教學設計 · 所有情境皆為前端安全模擬，使用假資料。</p>
+    <p class="mono" style="margin-top:8px">分類依據：OWASP Top 10 (2025) · <button class="reset" id="resetBtn">重設進度</button></p>
+  </div>
+</footer>
+
+<script src="common.js"></script>
+<script>
+renderProgress(); initTheme();
+var grid=document.getElementById('grid');
+function build(){
+  var done=OWASP.done(); grid.innerHTML='';
+  LEVELS.forEach(function(lv,i){
+    var unlocked=OWASP.isUnlocked(i), isdone=done.has(i);
+    var st=isdone?'done':(unlocked?'open':'locked');
+    var stat=isdone?'✓':(unlocked?'▶':'🔒');
+    var pill=isdone?'已完成':(unlocked?'可進入':'LOCKED');
+    var inner='<span class="stat">'+stat+'</span><span class="code">'+lv.code+'</span>'+
+      '<span class="nm">'+lv.nm+'</span><span class="en">'+lv.en+'</span>'+
+      '<span class="pill">'+pill+'</span>';
+    var node;
+    if(unlocked){ node=document.createElement('a'); node.href=lv.file; node.className='cell '+st; }
+    else{ node=document.createElement('div'); node.className='cell '+st; }
+    node.innerHTML=inner; grid.appendChild(node);
+  });
+  document.getElementById('final').hidden = done.size<10;
+}
+build();
+document.getElementById('resetBtn').onclick=function(){ OWASP.reset(); renderProgress(); build(); window.scrollTo({top:0,behavior:'smooth'}); };
+</script>
+</body>
+</html>

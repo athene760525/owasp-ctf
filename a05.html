@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>A05 注入攻擊 · 資安闖關</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header><div class="wrap"><div class="hbar"><a class="brand" href="index.html"><span class="dot"></span>OWASP 資安闖關<small>A05 · 注入攻擊</small></a><div class="hspace"></div><div class="pbadge">已解鎖 <b id="pnum">0</b>/10</div><button class="ghost" id="themeBtn" aria-label="切換深淺色">◐ 主題</button></div></div><div class="ptrack"><div class="pfill" id="pfill"></div></div></header>
+<main class="wrap">
+  <div class="levelhead">
+    <div class="lc">A05</div>
+    <div><div class="lt">注入攻擊</div><div class="le">Injection</div></div>
+  </div>
+
+  <div class="stepflag">① 情境體驗</div>
+  <p class="lead">登入表單把你輸入的字「直接拼進」資料庫查詢指令裡。下方會即時顯示系統組出來的指令。先用正常帳密試一次，再按「示範特殊輸入」看看指令的意思怎麼被改掉。</p>
+  <div class="card"><div id="sim"></div></div>
+
+  <div class="found" id="found"><b>⚠ 找到問題了！</b> <span id="foundTxt"></span>
+    <div class="unlocked-msg" id="umsg"></div></div>
+
+  <section class="reveal" id="reveal" hidden>
+    <div class="stepflag" style="color:var(--danger)">② 揭曉：原因與解法</div>
+    <h3 class="sec-why"><span class="ic">!</span>為什麼會發生？</h3>
+    <ul class="clean why"><li><span>把使用者輸入「直接拼接」進查詢指令，輸入的資料被當成「指令」執行。</span></li><li><span>系統沒有分清楚哪些是「資料」、哪些是「命令」。</span></li></ul>
+    <h3 class="sec-fix"><span class="ic">✓</span>正確做法</h3>
+    <ul class="clean"><li><span>用參數化查詢 (Prepared Statement)：輸入永遠當資料，不會變成指令。</span></li><li><span>對輸入做驗證與過濾，採白名單。</span></li><li><span>資料庫帳號只給必要權限，降低萬一被注入的損害。</span></li></ul>
+    <div class="teach"><h4>🎓 帶回教室</h4><p style="margin:0">核心觀念是「資料」與「命令」要分開。這一關最適合讓學生看到：同樣一句輸入，拼接 vs 參數化，結果天差地遠。</p></div>
+    <div class="pagenav">
+      <a class="btn sec" href="index.html">← 回闖關地圖</a>
+      <span class="sp"></span>
+      <a class="btn" href="a06.html">前往下一關 A06 →</a>
+    </div>
+  </section>
+
+  <footer>
+    <p>所有情境皆為前端安全模擬，使用假資料，不含可運作的攻擊程式。</p>
+    <p class="mono" style="margin-top:6px">OWASP Top 10 (2025) · A05 Injection</p>
+  </footer>
+</main>
+<script src="common.js"></script>
+<script>
+renderProgress(); initTheme();
+(function(){ var el=document.getElementById('sim');
+el.innerHTML='<div class="note">登入系統（示範：輸入如何被組成查詢指令）</div>'+
+ '<label class="fld">帳號</label><input id="a5u" value="teacher"><label class="fld">密碼</label><input id="a5p" value="mypassword">'+
+ '<div class="note" style="margin-top:12px">系統實際組出的查詢指令：</div><div class="screen" id="a5q"></div>'+
+ '<div class="btnrow"><button class="btn sec" id="a5normal">正常登入</button><button class="btn" id="a5demo">示範特殊輸入</button></div>'+
+ '<div class="screen" id="a5r" style="display:none"></div>';
+var u=document.getElementById('a5u'),p=document.getElementById('a5p'),q=document.getElementById('a5q'),r=document.getElementById('a5r');
+function refresh(){q.textContent="SELECT * FROM users\nWHERE user='"+u.value+"' AND pass='"+p.value+"';";}
+u.oninput=refresh;p.oninput=refresh;refresh();
+document.getElementById('a5normal').onclick=function(){refresh();r.style.display='block';r.innerHTML='執行中... 比對 user 與 pass → 需帳密正確才登入。這是預期行為。';};
+document.getElementById('a5demo').onclick=function(){
+ u.value="teacher' --";p.value="（任意）";refresh();r.style.display='block';
+ r.innerHTML='執行中...\n<span class="leak">注意：輸入裡的符號被當成「指令」而非「資料」，\n密碼比對那段被 -- 變成註解整句失效，驗證形同被繞過。</span>';
+ markFound(4,'看到了嗎？你輸入的字<b>被當成指令的一部分執行</b>，而不是單純的資料——這就是注入。關鍵是：資料和命令必須分開（參數化查詢）。');}; })();
+</script>
+</body>
+</html>

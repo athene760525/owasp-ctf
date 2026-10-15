@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>A02 安全設定錯誤 · 資安闖關</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header><div class="wrap"><div class="hbar"><a class="brand" href="index.html"><span class="dot"></span>OWASP 資安闖關<small>A02 · 安全設定錯誤</small></a><div class="hspace"></div><div class="pbadge">已解鎖 <b id="pnum">0</b>/10</div><button class="ghost" id="themeBtn" aria-label="切換深淺色">◐ 主題</button></div></div><div class="ptrack"><div class="pfill" id="pfill"></div></div></header>
+<main class="wrap">
+  <div class="levelhead">
+    <div class="lc">A02</div>
+    <div><div class="lt">安全設定錯誤</div><div class="le">Security Misconfiguration</div></div>
+  </div>
+
+  <div class="stepflag">① 情境體驗</div>
+  <p class="lead">這是學校網站主機上的檔案清單。有人上線時忘了關掉一些東西——備份檔、除錯頁面、預設管理後台都還公開在外。點點看哪個「不該被看到」。</p>
+  <div class="card"><div id="sim"></div></div>
+
+  <div class="found" id="found"><b>⚠ 找到問題了！</b> <span id="foundTxt"></span>
+    <div class="unlocked-msg" id="umsg"></div></div>
+
+  <section class="reveal" id="reveal" hidden>
+    <div class="stepflag" style="color:var(--danger)">② 揭曉：原因與解法</div>
+    <h3 class="sec-why"><span class="ic">!</span>為什麼會發生？</h3>
+    <ul class="clean why"><li><span>上線時沒把開發用的東西關掉：除錯模式、預設帳密、備份檔、目錄列表全曝光。</span></li><li><span>設定散落各處、沒有一致的安全基準，漏掉一兩個就出事。</span></li></ul>
+    <h3 class="sec-fix"><span class="ic">✓</span>正確做法</h3>
+    <ul class="clean"><li><span>上線前用檢查清單：關閉除錯、移除預設帳號、擋掉 .bak／.git／備份檔。</span></li><li><span>所有環境（開發、測試、正式）用同一套安全設定樣板。</span></li><li><span>只開必要的功能與連接埠，其餘預設關閉。</span></li></ul>
+    <div class="teach"><h4>🎓 帶回教室</h4><p style="margin:0">資安不一定是高深攻擊，常常是「忘了關門」。帶學生想想：家裡裝了防盜門，但窗戶開著也沒用——設定要全面。</p></div>
+    <div class="pagenav">
+      <a class="btn sec" href="index.html">← 回闖關地圖</a>
+      <span class="sp"></span>
+      <a class="btn" href="a03.html">前往下一關 A03 →</a>
+    </div>
+  </section>
+
+  <footer>
+    <p>所有情境皆為前端安全模擬，使用假資料，不含可運作的攻擊程式。</p>
+    <p class="mono" style="margin-top:6px">OWASP Top 10 (2025) · A02 Security Misconfiguration</p>
+  </footer>
+</main>
+<script src="common.js"></script>
+<script>
+renderProgress(); initTheme();
+(function(){ var el=document.getElementById('sim');
+el.innerHTML='<div class="note">公開可存取的檔案 /var/www/html/</div><ul class="filelist" id="a2list"></ul><div class="screen" id="a2out" style="display:none"></div>';
+var files=[["index.html","首頁",0],["style.css","樣式表",0],["about.html","關於我們",0],["config.php.bak","⚠ 資料庫設定備份檔（含帳密）",1],["/admin","⚠ 管理後台（預設帳密 admin/admin）",1],["/.git/","⚠ 原始碼版控目錄",1]];
+var list=document.getElementById('a2list'),out=document.getElementById('a2out');
+files.forEach(function(f){var li=document.createElement('li');if(f[2])li.className='danger-row';
+ li.innerHTML='<span class="fi">'+(f[2]?'📁':'📄')+'</span><button>'+f[0]+'</button><span class="fi">'+f[1]+'</span>';
+ li.querySelector('button').onclick=function(){out.style.display='block';
+  if(f[2]){out.innerHTML='開啟 '+f[0]+' ...\n<span class="leak">成功存取！這個檔案不該公開。</span>\n其中含有：DB_USER=root  DB_PASS=P@ssw0rd123';
+   markFound(1,'你打開了 <code>'+f[0]+'</code>——這種備份檔／後台／版控目錄<b>根本不該對外公開</b>，裡面常藏著帳號密碼。');}
+  else{out.textContent='開啟 '+f[0]+' ... 這是正常的公開網頁內容，沒問題。';}};
+ list.appendChild(li);}); })();
+</script>
+</body>
+</html>

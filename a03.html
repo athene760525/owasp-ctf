@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>A03 軟體供應鏈失效 · 資安闖關</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header><div class="wrap"><div class="hbar"><a class="brand" href="index.html"><span class="dot"></span>OWASP 資安闖關<small>A03 · 軟體供應鏈失效</small></a><div class="hspace"></div><div class="pbadge">已解鎖 <b id="pnum">0</b>/10</div><button class="ghost" id="themeBtn" aria-label="切換深淺色">◐ 主題</button></div></div><div class="ptrack"><div class="pfill" id="pfill"></div></div></header>
+<main class="wrap">
+  <div class="levelhead">
+    <div class="lc">A03</div>
+    <div><div class="lt">軟體供應鏈失效</div><div class="le">Software Supply Chain Failures</div></div>
+  </div>
+
+  <div class="stepflag">① 情境體驗</div>
+  <p class="lead">你的網站用了好幾個外部套件（別人寫的程式庫）。其中一個版本太舊、已被公告有重大漏洞。檢視相依清單，找出那個危險的套件。</p>
+  <div class="card"><div id="sim"></div></div>
+
+  <div class="found" id="found"><b>⚠ 找到問題了！</b> <span id="foundTxt"></span>
+    <div class="unlocked-msg" id="umsg"></div></div>
+
+  <section class="reveal" id="reveal" hidden>
+    <div class="stepflag" style="color:var(--danger)">② 揭曉：原因與解法</div>
+    <h3 class="sec-why"><span class="ic">!</span>為什麼會發生？</h3>
+    <ul class="clean why"><li><span>現代網站大量依賴外部套件，一個套件有漏洞，你的網站就跟著有。</span></li><li><span>沒有清點自己用了哪些套件、版本多舊，也沒在它被公告漏洞時更新。</span></li></ul>
+    <h3 class="sec-fix"><span class="ic">✓</span>正確做法</h3>
+    <ul class="clean"><li><span>列出軟體清單 (SBOM)：知道自己用了什麼、哪個版本。</span></li><li><span>定期用工具掃描相依套件的已知漏洞並更新。</span></li><li><span>只從官方來源取得套件，並驗證完整性 (如 SRI、簽章)。</span></li></ul>
+    <div class="teach"><h4>🎓 帶回教室</h4><p style="margin:0">用蓋房子比喻：你買現成的門窗很方便，但如果某批門鎖被公告有瑕疵，你得知道自己家裝的是不是那一批，並換掉。</p></div>
+    <div class="pagenav">
+      <a class="btn sec" href="index.html">← 回闖關地圖</a>
+      <span class="sp"></span>
+      <a class="btn" href="a04.html">前往下一關 A04 →</a>
+    </div>
+  </section>
+
+  <footer>
+    <p>所有情境皆為前端安全模擬，使用假資料，不含可運作的攻擊程式。</p>
+    <p class="mono" style="margin-top:6px">OWASP Top 10 (2025) · A03 Software Supply Chain Failures</p>
+  </footer>
+</main>
+<script src="common.js"></script>
+<script>
+renderProgress(); initTheme();
+(function(){ var el=document.getElementById('sim');
+el.innerHTML='<div class="note">package 相依清單 · 點套件掃描狀態</div><table class="tbl"><thead><tr><th>套件</th><th>版本</th><th>掃描</th></tr></thead><tbody id="a3b"></tbody></table><div class="screen" id="a3o" style="display:none"></div>';
+var deps=[["jquery","3.7.1","最新",0],["lodash","4.17.21","最新",0],["event-stream","3.3.6","⚠ 已知遭植入惡意程式 (CVE)",1],["moment","2.29.4","可用",0]];
+var tb=document.getElementById('a3b'),o=document.getElementById('a3o');
+deps.forEach(function(d){var tr=document.createElement('tr');
+ tr.innerHTML='<td>'+d[0]+'</td><td>'+d[1]+'</td><td><button class="btn sec" style="padding:4px 10px;font-size:.78rem">掃描</button></td>';
+ tr.querySelector('button').onclick=function(){o.style.display='block';
+  if(d[3]){o.innerHTML='掃描 '+d[0]+'@'+d[1]+' ...\n<span class="leak">⚠ 發現高風險漏洞：'+d[2]+'</span>\n這個套件被安裝後，你的網站也連帶中招。';
+   markFound(2,'<code>'+d[0]+'@'+d[1]+'</code> 有已公告的重大漏洞——<b>你沒寫錯任何一行程式，卻因為用了它而不安全</b>。');}
+  else{o.textContent='掃描 '+d[0]+'@'+d[1]+' ... 狀態：'+d[2]+'，無已知高風險漏洞。';}};
+ tb.appendChild(tr);}); })();
+</script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>A01 存取控制失效 · 資安闖關</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header><div class="wrap"><div class="hbar"><a class="brand" href="index.html"><span class="dot"></span>OWASP 資安闖關<small>A01 · 存取控制失效</small></a><div class="hspace"></div><div class="pbadge">已解鎖 <b id="pnum">0</b>/10</div><button class="ghost" id="themeBtn" aria-label="切換深淺色">◐ 主題</button></div></div><div class="ptrack"><div class="pfill" id="pfill"></div></div></header>
+<main class="wrap">
+  <div class="levelhead">
+    <div class="lc">A01</div>
+    <div><div class="lt">存取控制失效</div><div class="le">Broken Access Control</div></div>
+  </div>
+
+  <div class="stepflag">① 情境體驗</div>
+  <p class="lead">你登入「學生成績查詢系統」，網址列長這樣。系統只用網址裡的 <code>student_id</code> 決定要顯示誰的成績，而且<b>沒有檢查你是不是本人</b>。試著把號碼改成別人的看看。</p>
+  <div class="card"><div id="sim"></div></div>
+
+  <div class="found" id="found"><b>⚠ 找到問題了！</b> <span id="foundTxt"></span>
+    <div class="unlocked-msg" id="umsg"></div></div>
+
+  <section class="reveal" id="reveal" hidden>
+    <div class="stepflag" style="color:var(--danger)">② 揭曉：原因與解法</div>
+    <h3 class="sec-why"><span class="ic">!</span>為什麼會發生？</h3>
+    <ul class="clean why"><li><span>系統只憑網址上的 id 就給資料，<b>沒有在後端確認「這個人有沒有權限看這筆」</b>。</span></li><li><span>把判斷權限的工作交給使用者（可改的網址、隱藏欄位），而不是伺服器自己。</span></li></ul>
+    <h3 class="sec-fix"><span class="ic">✓</span>正確做法</h3>
+    <ul class="clean"><li><span>每一次存取資料，都在伺服器端檢查：這個登入者是否有權看／改這筆。</span></li><li><span>用「預設拒絕」(deny by default)：沒明確授權就一律擋下。</span></li><li><span>不要用連號、可猜的 id 當唯一門禁；重要操作再驗證一次身分。</span></li></ul>
+    <div class="teach"><h4>🎓 帶回教室</h4><p style="margin:0">可以帶學生看：很多外洩事件不是「被駭很厲害」，而是把網址數字改一下就看到別人的資料。權限要由系統把關，不是靠使用者乖乖不改網址。</p></div>
+    <div class="pagenav">
+      <a class="btn sec" href="index.html">← 回闖關地圖</a>
+      <span class="sp"></span>
+      <a class="btn" href="a02.html">前往下一關 A02 →</a>
+    </div>
+  </section>
+
+  <footer>
+    <p>所有情境皆為前端安全模擬，使用假資料，不含可運作的攻擊程式。</p>
+    <p class="mono" style="margin-top:6px">OWASP Top 10 (2025) · A01 Broken Access Control</p>
+  </footer>
+</main>
+<script src="common.js"></script>
+<script>
+renderProgress(); initTheme();
+(function(){ var el=document.getElementById('sim');
+el.innerHTML='<div class="note">成績查詢系統 · 目前登入：你本人 (1001)</div>'+
+ '<div class="urlbar"><span class="pre">grades.school.edu/view?student_id=</span><input id="a1id" value="1001" inputmode="numeric"></div>'+
+ '<button class="btn" id="a1go">查詢</button><div class="screen" id="a1out">［按「查詢」顯示結果］</div>';
+var grades={1001:{n:"你本人",c:"三年二班",s:"數學 78 · 英文 82 · 國文 75"},1002:{n:"王小明",c:"三年二班",s:"數學 91 · 英文 88 · 國文 90"},1003:{n:"陳美華",c:"三年五班",s:"數學 64 · 英文 70 · 國文 85"}};
+var out=document.getElementById('a1out');
+document.getElementById('a1go').onclick=function(){
+ var id=document.getElementById('a1id').value.trim(),g=grades[id];
+ if(!g){out.textContent='查無此學號（試試 1002 或 1003）';return;}
+ out.innerHTML='學號：'+id+'\n姓名：'+g.n+'\n班級：'+g.c+'\n成績：'+g.s;
+ if(id!=='1001') markFound(0,'你用別人的學號 <code>'+id+'</code> 就看到了 <b>'+g.n+'</b> 的完整成績——系統從頭到尾沒檢查你是不是本人。');
+}; })();
+</script>
+</body>
+</html>

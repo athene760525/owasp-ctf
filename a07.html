@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>A07 認證失效 · 資安闖關</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header><div class="wrap"><div class="hbar"><a class="brand" href="index.html"><span class="dot"></span>OWASP 資安闖關<small>A07 · 認證失效</small></a><div class="hspace"></div><div class="pbadge">已解鎖 <b id="pnum">0</b>/10</div><button class="ghost" id="themeBtn" aria-label="切換深淺色">◐ 主題</button></div></div><div class="ptrack"><div class="pfill" id="pfill"></div></div></header>
+<main class="wrap">
+  <div class="levelhead">
+    <div class="lc">A07</div>
+    <div><div class="lt">認證失效</div><div class="le">Authentication Failures</div></div>
+  </div>
+
+  <div class="stepflag">① 情境體驗</div>
+  <p class="lead">註冊頁面接受任何密碼，連「123456」都行，也沒有登入失敗鎖定。幫新帳號設一組密碼，看看系統會不會把關。</p>
+  <div class="card"><div id="sim"></div></div>
+
+  <div class="found" id="found"><b>⚠ 找到問題了！</b> <span id="foundTxt"></span>
+    <div class="unlocked-msg" id="umsg"></div></div>
+
+  <section class="reveal" id="reveal" hidden>
+    <div class="stepflag" style="color:var(--danger)">② 揭曉：原因與解法</div>
+    <h3 class="sec-why"><span class="ic">!</span>為什麼會發生？</h3>
+    <ul class="clean why"><li><span>允許弱密碼、沒有登入失敗鎖定，帳號很容易被猜中或暴力破解。</span></li><li><span>登入／工作階段管理不嚴謹 (如 session 不會過期)。</span></li></ul>
+    <h3 class="sec-fix"><span class="ic">✓</span>正確做法</h3>
+    <ul class="clean"><li><span>要求強密碼並比對外洩密碼清單；鼓勵使用密碼管理器。</span></li><li><span>開啟多因素驗證 (MFA)；登入連續失敗就鎖定或延遲。</span></li><li><span>工作階段要有時效、登出要真的失效。</span></li></ul>
+    <div class="teach"><h4>🎓 帶回教室</h4><p style="margin:0">帶學生實測自己的密碼強度、認識 MFA。重點：密碼是『你是你』的證明，太弱等於門沒鎖。</p></div>
+    <div class="pagenav">
+      <a class="btn sec" href="index.html">← 回闖關地圖</a>
+      <span class="sp"></span>
+      <a class="btn" href="a08.html">前往下一關 A08 →</a>
+    </div>
+  </section>
+
+  <footer>
+    <p>所有情境皆為前端安全模擬，使用假資料，不含可運作的攻擊程式。</p>
+    <p class="mono" style="margin-top:6px">OWASP Top 10 (2025) · A07 Authentication Failures</p>
+  </footer>
+</main>
+<script src="common.js"></script>
+<script>
+renderProgress(); initTheme();
+(function(){ var el=document.getElementById('sim');
+el.innerHTML='<div class="note">建立新帳號</div><label class="fld">設定密碼</label><input id="a7p" value="123456">'+
+ '<div class="note" id="a7s">強度：—</div><button class="btn" id="a7go" style="margin-top:10px">建立帳號</button><div class="screen" id="a7o" style="display:none"></div>';
+var p=document.getElementById('a7p'),s=document.getElementById('a7s');
+function str(v){if(v.length<6)return'太短';if(/^\d+$/.test(v)||['123456','password','iloveyou','qwerty'].indexOf(v)>=0)return'非常弱';if(v.length<10)return'普通';return'較強';}
+p.oninput=function(){s.textContent='強度：'+str(p.value);};p.oninput();
+document.getElementById('a7go').onclick=function(){var o=document.getElementById('a7o');o.style.display='block';
+ var weak=str(p.value)==='非常弱'||str(p.value)==='太短';
+ o.innerHTML='帳號建立成功。\n'+(weak?'<span class="leak">系統完全接受了「'+p.value+'」這種弱密碼，也沒有登入失敗鎖定——幾秒就會被暴力破解。</span>':'這組還行，但系統其實連 123456 都會收。');
+ if(weak)markFound(6,'系統<b>照單全收弱密碼</b>又沒有失敗鎖定，等於門沒鎖。認證失效讓帳號很容易被猜中或暴力破解。');
+ else markFound(6,'就算你設了較強的密碼，<b>系統本身連 123456 都接受</b>、也不鎖定失敗——把關的責任在系統，不能只靠使用者自律。');}; })();
+</script>
+</body>
+</html>

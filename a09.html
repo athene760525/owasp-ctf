@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>A09 安全記錄與警示失效 · 資安闖關</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header><div class="wrap"><div class="hbar"><a class="brand" href="index.html"><span class="dot"></span>OWASP 資安闖關<small>A09 · 安全記錄與警示失效</small></a><div class="hspace"></div><div class="pbadge">已解鎖 <b id="pnum">0</b>/10</div><button class="ghost" id="themeBtn" aria-label="切換深淺色">◐ 主題</button></div></div><div class="ptrack"><div class="pfill" id="pfill"></div></div></header>
+<main class="wrap">
+  <div class="levelhead">
+    <div class="lc">A09</div>
+    <div><div class="lt">安全記錄與警示失效</div><div class="le">Security Logging and Alerting Failures</div></div>
+  </div>
+
+  <div class="stepflag">① 情境體驗</div>
+  <p class="lead">深夜，有人連續嘗試登入管理後台好幾百次，最後成功了。身為管理員，你早上打開「系統日誌」想查到底發生什麼事⋯⋯</p>
+  <div class="card"><div id="sim"></div></div>
+
+  <div class="found" id="found"><b>⚠ 找到問題了！</b> <span id="foundTxt"></span>
+    <div class="unlocked-msg" id="umsg"></div></div>
+
+  <section class="reveal" id="reveal" hidden>
+    <div class="stepflag" style="color:var(--danger)">② 揭曉：原因與解法</div>
+    <h3 class="sec-why"><span class="ic">!</span>為什麼會發生？</h3>
+    <ul class="clean why"><li><span>沒有記錄關鍵事件 (登入失敗、權限變更)，出事後無跡可循。</span></li><li><span>就算有記錄也沒人看、沒有即時警示，攻擊持續很久才被發現。</span></li></ul>
+    <h3 class="sec-fix"><span class="ic">✓</span>正確做法</h3>
+    <ul class="clean"><li><span>記錄關鍵安全事件，並妥善保存、避免被竄改。</span></li><li><span>設定異常偵測與即時告警 (如短時間大量失敗登入)。</span></li><li><span>定期演練：發生事故時能多快發現與回應。</span></li></ul>
+    <div class="teach"><h4>🎓 帶回教室</h4><p style="margin:0">問學生：監視器如果沒開、或錄了沒人看，裝了等於沒裝。資安不只要防，還要『看得見、叫得出來』。</p></div>
+    <div class="pagenav">
+      <a class="btn sec" href="index.html">← 回闖關地圖</a>
+      <span class="sp"></span>
+      <a class="btn" href="a10.html">前往下一關 A10 →</a>
+    </div>
+  </section>
+
+  <footer>
+    <p>所有情境皆為前端安全模擬，使用假資料，不含可運作的攻擊程式。</p>
+    <p class="mono" style="margin-top:6px">OWASP Top 10 (2025) · A09 Security Logging and Alerting Failures</p>
+  </footer>
+</main>
+<script src="common.js"></script>
+<script>
+renderProgress(); initTheme();
+(function(){ var el=document.getElementById('sim');
+el.innerHTML='<div class="note">昨夜事件 · 管理後台登入紀錄</div><button class="btn" id="a9go">查看系統日誌</button><div class="screen" id="a9o" style="display:none"></div>';
+document.getElementById('a9go').onclick=function(){var o=document.getElementById('a9o');o.style.display='block';
+ o.innerHTML='開啟 /var/log/auth.log ...\n<span class="leak">（空白）</span>\n系統沒有記錄任何登入嘗試，也沒有任何告警。\n昨晚數百次嘗試與一次成功入侵——完全沒有留下痕跡，也沒人收到通知。';
+ markFound(8,'日誌<b>一片空白、沒有任何告警</b>。攻擊發生了卻沒被記錄、沒人發現——這就是記錄與警示失效。');}; })();
+</script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>A04 加密機制失效 · 資安闖關</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header><div class="wrap"><div class="hbar"><a class="brand" href="index.html"><span class="dot"></span>OWASP 資安闖關<small>A04 · 加密機制失效</small></a><div class="hspace"></div><div class="pbadge">已解鎖 <b id="pnum">0</b>/10</div><button class="ghost" id="themeBtn" aria-label="切換深淺色">◐ 主題</button></div></div><div class="ptrack"><div class="pfill" id="pfill"></div></div></header>
+<main class="wrap">
+  <div class="levelhead">
+    <div class="lc">A04</div>
+    <div><div class="lt">加密機制失效</div><div class="le">Cryptographic Failures</div></div>
+  </div>
+
+  <div class="stepflag">① 情境體驗</div>
+  <p class="lead">這個網站把使用者密碼直接存進資料庫，登入時也走沒有加密的連線。打開資料庫看看——你會發現一件很不妙的事。</p>
+  <div class="card"><div id="sim"></div></div>
+
+  <div class="found" id="found"><b>⚠ 找到問題了！</b> <span id="foundTxt"></span>
+    <div class="unlocked-msg" id="umsg"></div></div>
+
+  <section class="reveal" id="reveal" hidden>
+    <div class="stepflag" style="color:var(--danger)">② 揭曉：原因與解法</div>
+    <h3 class="sec-why"><span class="ic">!</span>為什麼會發生？</h3>
+    <ul class="clean why"><li><span>密碼用明文存，資料庫一旦外洩，所有人的密碼直接被看光。</span></li><li><span>連線沒加密 (HTTP)，傳輸途中帳密會被攔截。</span></li></ul>
+    <h3 class="sec-fix"><span class="ic">✓</span>正確做法</h3>
+    <ul class="clean"><li><span>密碼絕不存明文：用專門的雜湊 (如 bcrypt／Argon2) 加鹽保存。</span></li><li><span>全站強制 HTTPS，敏感資料傳輸一律加密。</span></li><li><span>只蒐集必要的敏感資料，能不存就不存。</span></li></ul>
+    <div class="teach"><h4>🎓 帶回教室</h4><p style="margin:0">問學生：如果補習班把所有人的密碼寫在一張紙上鎖抽屜，抽屜被偷走會怎樣？正確做法是連老師自己都看不到原始密碼。</p></div>
+    <div class="pagenav">
+      <a class="btn sec" href="index.html">← 回闖關地圖</a>
+      <span class="sp"></span>
+      <a class="btn" href="a05.html">前往下一關 A05 →</a>
+    </div>
+  </section>
+
+  <footer>
+    <p>所有情境皆為前端安全模擬，使用假資料，不含可運作的攻擊程式。</p>
+    <p class="mono" style="margin-top:6px">OWASP Top 10 (2025) · A04 Cryptographic Failures</p>
+  </footer>
+</main>
+<script src="common.js"></script>
+<script>
+renderProgress(); initTheme();
+(function(){ var el=document.getElementById('sim');
+el.innerHTML='<div class="note">users 資料表</div><button class="btn" id="a4btn">打開資料庫查看</button>'+
+ '<table class="tbl" id="a4t" style="display:none"><thead><tr><th>帳號</th><th>密碼（資料庫實際存的）</th></tr></thead><tbody>'+
+ '<tr><td>teacher_lin</td><td class="leak">Spring2024!</td></tr><tr><td>student_wang</td><td class="leak">iloveyou</td></tr><tr><td>admin</td><td class="leak">admin123</td></tr></tbody></table>'+
+ '<div class="note" id="a4n" style="display:none;margin-top:10px">連線協定：<span class="leak">http://（未加密）</span></div>';
+document.getElementById('a4btn').onclick=function(){
+ document.getElementById('a4t').style.display='table';document.getElementById('a4n').style.display='block';
+ markFound(3,'資料庫裡的密碼<b>全是明文</b>，一眼就能讀。只要資料庫外洩，所有人的密碼立刻被看光；連線還走沒加密的 HTTP。');}; })();
+</script>
+</body>
+</html>

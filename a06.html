@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>A06 不安全設計 · 資安闖關</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header><div class="wrap"><div class="hbar"><a class="brand" href="index.html"><span class="dot"></span>OWASP 資安闖關<small>A06 · 不安全設計</small></a><div class="hspace"></div><div class="pbadge">已解鎖 <b id="pnum">0</b>/10</div><button class="ghost" id="themeBtn" aria-label="切換深淺色">◐ 主題</button></div></div><div class="ptrack"><div class="pfill" id="pfill"></div></div></header>
+<main class="wrap">
+  <div class="levelhead">
+    <div class="lc">A06</div>
+    <div><div class="lt">不安全設計</div><div class="le">Insecure Design</div></div>
+  </div>
+
+  <div class="stepflag">① 情境體驗</div>
+  <p class="lead">「忘記密碼」只問一題安全問題：你的生日。生日在社群上查得到，而且可以無限次猜。這不是程式寫錯，是<b>流程設計本身就不安全</b>。試著重設別人的密碼。</p>
+  <div class="card"><div id="sim"></div></div>
+
+  <div class="found" id="found"><b>⚠ 找到問題了！</b> <span id="foundTxt"></span>
+    <div class="unlocked-msg" id="umsg"></div></div>
+
+  <section class="reveal" id="reveal" hidden>
+    <div class="stepflag" style="color:var(--danger)">② 揭曉：原因與解法</div>
+    <h3 class="sec-why"><span class="ic">!</span>為什麼會發生？</h3>
+    <ul class="clean why"><li><span>問題出在<b>流程怎麼設計</b>，不是某行程式寫錯——可公開查到的安全問題、無限次嘗試。</span></li><li><span>設計時沒有先想「壞人會怎麼濫用這個功能」。</span></li></ul>
+    <h3 class="sec-fix"><span class="ic">✓</span>正確做法</h3>
+    <ul class="clean"><li><span>設計階段就做威脅塑模：想清楚誰會濫用、怎麼濫用。</span></li><li><span>重要流程加防濫用機制：次數限制、多重驗證、人工確認。</span></li><li><span>用安全的設計樣式，不要重新發明驗證流程。</span></li></ul>
+    <div class="teach"><h4>🎓 帶回教室</h4><p style="margin:0">讓學生區分：有些漏洞是『蓋歪了』(寫錯)，有些是『設計圖就有問題』(流程不安全)。後者再怎麼仔細寫程式也補不起來。</p></div>
+    <div class="pagenav">
+      <a class="btn sec" href="index.html">← 回闖關地圖</a>
+      <span class="sp"></span>
+      <a class="btn" href="a07.html">前往下一關 A07 →</a>
+    </div>
+  </section>
+
+  <footer>
+    <p>所有情境皆為前端安全模擬，使用假資料，不含可運作的攻擊程式。</p>
+    <p class="mono" style="margin-top:6px">OWASP Top 10 (2025) · A06 Insecure Design</p>
+  </footer>
+</main>
+<script src="common.js"></script>
+<script>
+renderProgress(); initTheme();
+(function(){ var el=document.getElementById('sim');
+el.innerHTML='<div class="note">忘記密碼 · 唯一驗證：安全問題</div>'+
+ '<div class="note" style="margin:6px 0">要重設的帳號：<b>wang_ming</b>（他的生日社群上查得到：03/14）</div>'+
+ '<label class="fld">安全問題：你的生日 (MM/DD)</label><input id="a6a" value="03/14">'+
+ '<div class="note">嘗試次數：<span id="a6c">0</span>（無上限）</div>'+
+ '<button class="btn" id="a6go" style="margin-top:10px">送出並重設密碼</button><div class="screen" id="a6o" style="display:none"></div>';
+var c=0;
+document.getElementById('a6go').onclick=function(){c++;document.getElementById('a6c').textContent=c;
+ var o=document.getElementById('a6o');o.style.display='block';
+ if(document.getElementById('a6a').value.trim()==='03/14'){
+  o.innerHTML='<span class="leak">驗證通過！你已重設 wang_ming 的密碼。</span>\n你不是本人，只靠一個查得到的生日就奪取了帳號。';
+  markFound(5,'你只用一個<b>公開查得到的生日</b>、而且可以無限次猜，就接管了別人的帳號——問題在流程設計，不是程式打錯字。');}
+ else{o.textContent='生日不對，再試一次（反正沒有次數限制…）';}}; })();
+</script>
+</body>
+</html>

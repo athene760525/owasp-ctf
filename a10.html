@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>A10 例外狀況處理不當 · 資安闖關</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header><div class="wrap"><div class="hbar"><a class="brand" href="index.html"><span class="dot"></span>OWASP 資安闖關<small>A10 · 例外狀況處理不當</small></a><div class="hspace"></div><div class="pbadge">已解鎖 <b id="pnum">0</b>/10</div><button class="ghost" id="themeBtn" aria-label="切換深淺色">◐ 主題</button></div></div><div class="ptrack"><div class="pfill" id="pfill"></div></div></header>
+<main class="wrap">
+  <div class="levelhead">
+    <div class="lc">A10</div>
+    <div><div class="lt">例外狀況處理不當</div><div class="le">Mishandling of Exceptional Conditions</div></div>
+  </div>
+
+  <div class="stepflag">① 情境體驗</div>
+  <p class="lead">報名系統要你輸入人數。程式只預期你乖乖填數字，沒想過你會亂填。試著填一個「不正常」的值，看系統怎麼反應。</p>
+  <div class="card"><div id="sim"></div></div>
+
+  <div class="found" id="found"><b>⚠ 找到問題了！</b> <span id="foundTxt"></span>
+    <div class="unlocked-msg" id="umsg"></div></div>
+
+  <section class="reveal" id="reveal" hidden>
+    <div class="stepflag" style="color:var(--danger)">② 揭曉：原因與解法</div>
+    <h3 class="sec-why"><span class="ic">!</span>為什麼會發生？</h3>
+    <ul class="clean why"><li><span>程式只處理『正常情況』，遇到沒預期的輸入就當掉或亂了套。</span></li><li><span>錯誤訊息把內部細節 (路徑、資料庫、程式碼) 全吐出來給攻擊者看。</span></li></ul>
+    <h3 class="sec-fix"><span class="ic">✓</span>正確做法</h3>
+    <ul class="clean"><li><span>對所有輸入做嚴謹驗證，預期『使用者會亂填』。</span></li><li><span>妥善處理例外：對外只給友善訊息，細節寫進內部日誌。</span></li><li><span>失敗時要安全地收尾 (fail securely)，不洩漏內部資訊。</span></li></ul>
+    <div class="teach"><h4>🎓 帶回教室</h4><p style="margin:0">讓學生故意亂填表單，看會不會跳出奇怪的錯誤畫面。好的系統會優雅地說『輸入有誤』，而不是把家底掀給你看。</p></div>
+    <div class="pagenav">
+      <a class="btn sec" href="index.html">← 回闖關地圖</a>
+      <span class="sp"></span>
+      <a class="btn" href="index.html">完成，回地圖 ★</a>
+    </div>
+  </section>
+
+  <footer>
+    <p>所有情境皆為前端安全模擬，使用假資料，不含可運作的攻擊程式。</p>
+    <p class="mono" style="margin-top:6px">OWASP Top 10 (2025) · A10 Mishandling of Exceptional Conditions</p>
+  </footer>
+</main>
+<script src="common.js"></script>
+<script>
+renderProgress(); initTheme();
+(function(){ var el=document.getElementById('sim');
+el.innerHTML='<div class="note">活動報名 · 請輸入人數</div><label class="fld">報名人數</label><input id="a10i" value="2">'+
+ '<button class="btn" id="a10go" style="margin-top:10px">送出</button>'+
+ '<div class="note" style="margin-top:8px">試試看填：文字、負數、或超大的數字</div><div class="screen" id="a10o" style="display:none"></div>';
+document.getElementById('a10go').onclick=function(){var v=document.getElementById('a10i').value.trim(),o=document.getElementById('a10o');o.style.display='block';
+ var num=Number(v);
+ if(v===''||isNaN(num)||num<0||num>9000||!Number.isInteger(num)){
+  o.innerHTML='<span class="leak">500 Internal Server Error</span>\n  at RegistrationController.save (/app/src/controllers/reg.js:42)\n  at Database.query (/app/node_modules/db/index.js:88)\n  DB: postgres://app:S3cr3t@10.0.0.5:5432/school\n<span class="leak">↑ 程式沒處理這種輸入就當掉了，還把內部路徑、資料庫位置和帳密全吐出來。</span>';
+  markFound(9,'你輸入了程式沒預期的值，它<b>直接當掉並噴出內部細節</b>——檔案路徑、資料庫位址甚至帳密全洩漏。例外沒有被妥善處理。');}
+ else{o.textContent='報名成功：'+num+' 人。\n（但只要改填文字或負數，系統就會出事——試試看！）';}}; })();
+</script>
+</body>
+</html>
